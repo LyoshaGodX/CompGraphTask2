@@ -6,7 +6,7 @@ import numpy as np
 def draw_lines_and_points(lines):
     pygame.init()
 
-    width, height = 1000, 1000
+    width, height = 1100, 1500
     screen = pygame.display.set_mode((width, height))
     pygame.display.set_caption("Lines and Points")
 
@@ -14,7 +14,7 @@ def draw_lines_and_points(lines):
     black = (0, 0, 0)
     red = (255, 0, 0)
 
-    offset_x, offset_y = -500, -570
+    offset_x, offset_y = width // 2 - 200, height // 2 - 200
 
     running = True
     while running:
@@ -26,17 +26,17 @@ def draw_lines_and_points(lines):
 
         for line in lines:
             centered_line = [
-                [point[0] + width // 2 + offset_x, point[1] + height // 2 + offset_y]
+                [point[0] + offset_x, point[1] + offset_y]
                 for point in line
             ]
             pygame.draw.line(screen, black, (centered_line[0][0], centered_line[0][1]),
                              (centered_line[1][0], centered_line[1][1]))
 
             font = pygame.font.Font(None, 20)
-            angle = calculate_angle(line)
-            text = font.render(f"{angle:.2f}", True, red)
-            mid = find_midpoint(line)
-            screen.blit(text, (mid[0] + width // 2 + offset_x, mid[1] + height // 2 + offset_y - 20))
+
+            for i, point in enumerate(line):
+                text = font.render(f"({point[0]}, {point[1]})", True, red)
+                screen.blit(text, (centered_line[i][0] + 5, centered_line[i][1]))
 
         pygame.display.flip()
 
@@ -54,33 +54,9 @@ def transform_matrix(matrix, transformation_matrix):
     return transformed_matrix
 
 
-def calculate_slope(line):
-    x1, y1 = line[0]
-    x2, y2 = line[1]
+L = [[-1 / 2, 3 / 2], [3, -2], [-1, -1], [3, 5 / 3]]
+T = [[1, 2], [1, -3]]
 
-    if x2 - x1 == 0:
-        return float('inf')
+L_transformed = transform_matrix(np.array(L) * 100, np.array(T))
 
-    slope = (y2 - y1) / (x2 - x1)
-    return slope
-
-
-def calculate_angle(line):
-    slope = calculate_slope(line)
-    angle_rad = np.arctan(slope)
-    angle_deg = np.degrees(angle_rad)
-    return angle_deg
-
-
-def find_midpoint(line):
-    x_mid = (line[0][0] + line[1][0]) // 2
-    y_mid = (line[0][1] + line[1][1]) // 2
-    return [x_mid, y_mid]
-
-
-L = [[50, 100], [250, 200], [50, 200], [250, 300]]
-T = [[1, 2], [3, 1]]
-
-L_transformed = transform_matrix(np.array(L), np.array(T))
-
-draw_lines_and_points([L[:2], L[2:], L_transformed[:2], L_transformed[2:]])
+draw_lines_and_points([np.array(L[:2]) * 100, np.array(L[2:]) * 100, L_transformed[:2], L_transformed[2:]])

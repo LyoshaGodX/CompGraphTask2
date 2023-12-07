@@ -34,7 +34,7 @@ def draw_lines_and_points(lines, points):
 
             font = pygame.font.Font(None, 20)
             for i, point in enumerate(line):
-                text = font.render(f"({point[0] }, {point[1]})", True, red)
+                text = font.render(f"({point[0]}, {point[1]})", True, red)
                 screen.blit(text, (centered_line[i][0] + 5, centered_line[i][1]))
 
         for point in points:
@@ -69,7 +69,6 @@ def find_midpoint(line):
 
 L = [[0, 100], [200, 300]]
 T = [[1, 2], [3, 1]]
-
 
 L_transformed = transform_line(np.array(L), np.array(T))
 
